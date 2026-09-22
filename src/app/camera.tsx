@@ -1,18 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  Canvas,
-  ColorMatrix,
-  Image as SkiaImage,
-  useCanvasRef,
-  useImage,
-} from "@shopify/react-native-skia";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
-  Button,
   Image,
   StyleSheet,
   Text,
@@ -21,158 +12,30 @@ import {
   View,
 } from "react-native";
 
-type FilterType =
-  | "normal"
-  | "yellow"
-  | "blue"
-  | "blackwhite"
-  | "pink"
-  | "green";
-
-type ImageProcessorProps = {
-  imageUri: string;
-  filter: FilterType;
-  onProcessed: (uri: string) => void;
-  onError: () => void;
-};
-
-const filters: { id: FilterType; name: string; color: string }[] = [
-  { id: "normal", name: "Normal", color: "#FFFFFF" },
-  { id: "yellow", name: "Amarelo", color: "#FFD54F" },
-  { id: "blue", name: "Azul", color: "#42A5F5" },
-  { id: "blackwhite", name: "P&B", color: "#777777" },
-  { id: "pink", name: "Rosa", color: "#EC407A" },
-  { id: "green", name: "Verde", color: "#66BB6A" },
-];
-
-const FILTER_MATRICES: Record<FilterType, number[]> = {
-  normal: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-  yellow: [
-    1.1, 0.1, 0, 0, 0, 0.05, 1.05, 0, 0, 0, 0, 0, 0.55, 0, 0, 0, 0, 0, 1, 0,
-  ],
-  blue: [0.7, 0, 0, 0, 0, 0, 0.85, 0, 0, 0, 0, 0.1, 1.3, 0, 0, 0, 0, 0, 1, 0],
-  blackwhite: [
-    0.299, 0.587, 0.114, 0, 0, 0.299, 0.587, 0.114, 0, 0, 0.299, 0.587, 0.114,
-    0, 0, 0, 0, 0, 1, 0,
-  ],
-  pink: [1.15, 0, 0, 0, 0, 0, 0.75, 0, 0, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 1, 0],
-  green: [
-    0.75, 0, 0, 0, 0, 0, 1.2, 0, 0, 0, 0, 0.05, 0.75, 0, 0, 0, 0, 0, 1, 0,
-  ],
-};
-
-function ImageProcessor({
-  imageUri,
-  filter,
-  onProcessed,
-  onError,
-}: ImageProcessorProps) {
-  const image = useImage(imageUri);
-  const canvasRef = useCanvasRef();
-  const [canvasReady, setCanvasReady] = useState(false);
-
-  useEffect(() => {
-    if (!image || !canvasReady) return;
-
-    let processed = false;
-
-    async function processImage() {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        if (processed) return;
-
-        const snapshot = await canvasRef.current?.makeImageSnapshotAsync();
-
-        if (!snapshot) throw new Error("Não foi possível gerar a imagem.");
-
-        processed = true;
-        onProcessed(`data:image/png;base64,${snapshot.encodeToBase64()}`);
-      } catch (error) {
-        console.log("Erro ao processar imagem:", error);
-        onError();
-      }
-    }
-
-    processImage();
-
-    return () => {
-      processed = true;
-    };
-  }, [canvasReady, canvasRef, filter, image, onError, onProcessed]);
-
-  if (!image) return null;
-
-  return (
-    <View
-      style={[
-        styles.processorContainer,
-        { width: image.width(), height: image.height() },
-      ]}
-      onLayout={() => setCanvasReady(true)}
-    >
-      <Canvas
-        ref={canvasRef}
-        style={{ width: image.width(), height: image.height() }}
-      >
-        <SkiaImage
-          image={image}
-          x={0}
-          y={0}
-          width={image.width()}
-          height={image.height()}
-          fit="fill"
-        >
-          <ColorMatrix matrix={FILTER_MATRICES[filter]} />
-        </SkiaImage>
-      </Canvas>
-    </View>
-  );
-}
-
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>("normal");
-  const [photoToProcess, setPhotoToProcess] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
-
   const cameraRef = useRef<CameraView>(null);
 
-  if (!permission) {
-    return <View />;
+  function goBackSafely() {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/");
+    }
   }
 
-  if (!permission.granted) {
-    return (
-      <>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.backButton}>← Voltar</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}>Tirar foto</Text>
-
-          <View style={styles.headerSpace} />
-        </View>
-        <View style={styles.permissionContainer}>
-          <Text style={styles.text}>
-            Precisamos da sua permissão para usar a câmera.
-          </Text>
-
-          <Button title="Permitir câmera" onPress={requestPermission} />
-        </View>
-      </>
-    );
+  function retakePhoto() {
+    setPhoto(null);
+    setCaption("");
   }
 
   async function takePhoto() {
-    if (!cameraRef.current || !isCameraReady || isCapturing || isProcessing)
-      return;
+    if (!cameraRef.current || !isCameraReady || isCapturing) return;
 
     setIsCapturing(true);
 
@@ -180,48 +43,25 @@ export default function CameraScreen() {
       const result = await cameraRef.current.takePictureAsync();
 
       if (result?.uri) {
-        if (selectedFilter === "normal") {
-          setPhoto(result.uri);
-        } else {
-          setIsProcessing(true);
-          setPhotoToProcess(result.uri);
-        }
+        setPhoto(result.uri);
+      } else {
+        Alert.alert("Erro", "Não foi possível capturar a foto.");
       }
     } catch (error) {
       console.log("Erro ao capturar foto:", error);
+      Alert.alert("Erro", "Não foi possível capturar a foto.");
     } finally {
       setIsCapturing(false);
     }
-  }
-
-  function handleProcessedPhoto(processedUri: string) {
-    setPhoto(processedUri);
-    setPhotoToProcess(null);
-    setIsProcessing(false);
-  }
-
-  function handleProcessingError() {
-    setPhotoToProcess(null);
-    setIsProcessing(false);
-    Alert.alert("Erro", "Não foi possível aplicar o filtro.");
   }
 
   async function savePhoto() {
     if (!photo) return;
 
     try {
-      const newPhoto = {
-        id: Date.now().toString(),
-        uri: photo,
-        caption: caption,
-        date: new Date().toLocaleDateString("pt-BR"),
-        filter: selectedFilter,
-      };
-
       const existingPhotos = await AsyncStorage.getItem("photos");
       const photos = existingPhotos ? JSON.parse(existingPhotos) : [];
 
-      // Verifica se a foto já foi salva
       const alreadySaved = photos.some(
         (item: { uri: string }) => item.uri === photo,
       );
@@ -231,131 +71,123 @@ export default function CameraScreen() {
         return;
       }
 
-      photos.push(newPhoto);
+      photos.push({
+        id: Date.now().toString(),
+        uri: photo,
+        caption,
+        date: new Date().toLocaleDateString("pt-BR"),
+      });
 
       await AsyncStorage.setItem("photos", JSON.stringify(photos));
-
-      console.log("Foto salva com sucesso!");
 
       Alert.alert("Foto salva!", "A foto foi adicionada à sua galeria.");
     } catch (error) {
       console.log("Erro ao salvar foto:", error);
-
       Alert.alert("Erro", "Não foi possível salvar a foto.");
     }
   }
 
-  if (photo) {
+  if (!permission) {
+    return <View style={styles.loadingScreen} />;
+  }
+
+  if (!permission.granted) {
     return (
-      <>
+      <View style={styles.screen}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => {
-              setPhoto(null);
-              setCaption("");
-            }}
-          >
-            <Text style={styles.backButton}>← Voltar</Text>
+          <TouchableOpacity onPress={goBackSafely} style={styles.headerButton}>
+            <Text style={styles.backButton}>Voltar</Text>
           </TouchableOpacity>
 
-          <Text style={styles.headerTitle}>Tirar foto</Text>
-
+          <Text style={styles.headerTitle}>Câmera</Text>
           <View style={styles.headerSpace} />
         </View>
 
-        <View style={styles.previewContainer}>
-          <Image source={{ uri: photo }} style={styles.photo} />
+        <View style={styles.permissionContainer}>
+          <View style={styles.permissionCard}>
+            <Text style={styles.permissionTitle}>Permitir acesso à câmera</Text>
+            <Text style={styles.permissionText}>
+              Precisamos da sua permissão para capturar imagens e continuar.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={requestPermission}
+            >
+              <Text style={styles.primaryButtonText}>Permitir câmera</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  if (photo) {
+    return (
+      <View style={styles.screen}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={retakePhoto} style={styles.headerButton}>
+            <Text style={styles.backButton}>Voltar</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.headerTitle}>Salvar foto</Text>
+          <View style={styles.headerSpace} />
+        </View>
+
+        <View style={styles.previewScreen}>
+          <View style={styles.previewCard}>
+            <Image source={{ uri: photo }} style={styles.photo} />
+          </View>
 
           <View style={styles.infoContainer}>
-            <Text style={styles.captionTitle}>Adicione uma legenda</Text>
+            <Text style={styles.captionTitle}>Legenda</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="Ex: Experimento de química"
-              placeholderTextColor="#888"
+              placeholder="Ex: passeio de manhã"
+              placeholderTextColor="#7B7B7B"
               value={caption}
               onChangeText={setCaption}
             />
 
             <Text style={styles.date}>
-              📅 {new Date().toLocaleDateString("pt-BR")}
-            </Text>
-
-            <Text style={styles.selectedFilterText}>
-              Filtro:{" "}
-              {filters.find((filter) => filter.id === selectedFilter)?.name}
+              {new Date().toLocaleDateString("pt-BR")}
             </Text>
 
             <TouchableOpacity
               style={styles.secondaryButton}
-              onPress={() => {
-                setPhoto(null);
-                setCaption("");
-              }}
+              onPress={retakePhoto}
             >
-              <Text style={styles.buttonText}>🔄 Tirar novamente</Text>
+              <Text style={styles.secondaryButtonText}>Tirar novamente</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.saveButton} onPress={savePhoto}>
-              <Text style={styles.saveButtonText}>💾 Salvar</Text>
+            <TouchableOpacity style={styles.primaryButton} onPress={savePhoto}>
+              <Text style={styles.primaryButtonText}>Salvar</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </>
+      </View>
     );
   }
 
   return (
-    <>
+    <View style={styles.screen}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Voltar</Text>
+        <TouchableOpacity onPress={goBackSafely} style={styles.headerButton}>
+          <Text style={styles.backButton}>Voltar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Tirar foto</Text>
-
+        <Text style={styles.headerTitle}>Câmera</Text>
         <View style={styles.headerSpace} />
       </View>
-      <View style={styles.container}>
+
+      <View style={styles.cameraWrap}>
         <CameraView
           ref={cameraRef}
           style={styles.camera}
           facing="back"
           onCameraReady={() => setIsCameraReady(true)}
         />
-
-        <View style={styles.filtersContainer}>
-          <Text style={styles.filtersTitle}>Filtros</Text>
-
-          <View style={styles.filtersList}>
-            {filters.map((filter) => (
-              <TouchableOpacity
-                key={filter.id}
-                style={[
-                  styles.filterButton,
-                  selectedFilter === filter.id && styles.filterButtonSelected,
-                ]}
-                onPress={() => setSelectedFilter(filter.id)}
-                disabled={isCapturing || isProcessing}
-              >
-                <View
-                  style={[
-                    styles.filterCircle,
-                    { backgroundColor: filter.color },
-                  ]}
-                />
-                <Text
-                  style={[
-                    styles.filterText,
-                    selectedFilter === filter.id && styles.filterTextSelected,
-                  ]}
-                >
-                  {filter.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
 
         <View style={styles.captureContainer}>
           <TouchableOpacity
@@ -366,30 +198,58 @@ export default function CameraScreen() {
             <View style={styles.captureButtonInner} />
           </TouchableOpacity>
         </View>
-
-        {isProcessing && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>Aplicando filtro...</Text>
-          </View>
-        )}
-
-        {photoToProcess && (
-          <ImageProcessor
-            imageUri={photoToProcess}
-            filter={selectedFilter}
-            onProcessed={handleProcessedPhoto}
-            onError={handleProcessingError}
-          />
-        )}
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
+    backgroundColor: "#F4F0EA",
+  },
+
+  loadingScreen: {
+    flex: 1,
+    backgroundColor: "#F4F0EA",
+  },
+
+  header: {
+    height: 88,
+    paddingTop: 44,
+    paddingHorizontal: 18,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F9F7F4",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E9E2DB",
+  },
+
+  headerButton: {
+    minWidth: 58,
+  },
+
+  backButton: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#1E272B",
+  },
+
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1E272B",
+  },
+
+  headerSpace: {
+    width: 58,
+  },
+
+  cameraWrap: {
+    flex: 1,
+    position: "relative",
+    backgroundColor: "#0F1518",
   },
 
   camera: {
@@ -398,209 +258,149 @@ const styles = StyleSheet.create({
 
   captureContainer: {
     position: "absolute",
-    bottom: 40,
-    width: "100%",
+    bottom: 26,
+    left: 0,
+    right: 0,
     alignItems: "center",
   },
 
   captureButton: {
-    width: 78,
-    height: 78,
-    borderRadius: 39,
-    backgroundColor: "#fff",
+    width: 86,
+    height: 86,
+    borderRadius: 43,
+    backgroundColor: "rgba(255,255,255,0.9)",
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
   },
 
   captureButtonInner: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    backgroundColor: "#222",
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "#1E272B",
+    borderWidth: 4,
+    borderColor: "#F4F0EA",
   },
 
-  previewContainer: {
+  previewScreen: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#F4F0EA",
+    padding: 16,
+  },
+
+  previewCard: {
+    width: "100%",
+    height: 420,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 28,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#E9E1D8",
   },
 
   photo: {
     flex: 1,
     width: "100%",
     resizeMode: "contain",
+    backgroundColor: "#FFFFFF",
   },
 
-  buttons: {
-    position: "absolute",
-    bottom: 40,
-    width: "100%",
-    alignItems: "center",
+  infoContainer: {
+    backgroundColor: "#F9F7F4",
+    borderRadius: 24,
+    padding: 18,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: "#E9E1D8",
   },
 
-  secondaryButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 12,
+  captionTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1E272B",
+    marginBottom: 10,
   },
 
-  buttonText: {
+  input: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#222",
+    color: "#1E272B",
+    borderWidth: 1,
+    borderColor: "#E3D9D1",
+    marginBottom: 12,
+  },
+
+  date: {
+    fontSize: 14,
+    color: "#5C656A",
+    marginBottom: 16,
   },
 
   permissionContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 30,
+    padding: 24,
   },
 
-  text: {
-    textAlign: "center",
-    fontSize: 18,
-    marginBottom: 20,
-  },
-
-  infoContainer: {
-    backgroundColor: "#F5F1E8",
-    padding: 20,
-  },
-
-  captionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginBottom: 12,
-  },
-
-  date: {
-    fontSize: 14,
-    marginBottom: 15,
-  },
-
-  selectedFilterText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-
-  saveButton: {
-    backgroundColor: "#222",
-    paddingVertical: 15,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  filtersContainer: {
-    position: "absolute",
-    bottom: 135,
+  permissionCard: {
     width: "100%",
-    paddingHorizontal: 10,
-  },
-
-  filtersTitle: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-
-  filtersList: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-  },
-
-  filterButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 7,
-    borderRadius: 10,
-    backgroundColor: "rgba(0,0,0,0.55)",
-  },
-
-  filterButtonSelected: {
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-
-  filterCircle: {
-    width: 25,
-    height: 25,
-    borderRadius: 13,
+    backgroundColor: "#F9F7F4",
     borderWidth: 1,
-    borderColor: "#fff",
-    marginBottom: 3,
+    borderColor: "#E9E1D8",
+    borderRadius: 24,
+    padding: 24,
   },
 
-  filterText: {
-    color: "#fff",
-    fontSize: 10,
+  permissionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#1E272B",
+    marginBottom: 10,
   },
 
-  filterTextSelected: {
-    fontWeight: "bold",
+  permissionText: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#5F696D",
+    marginBottom: 22,
   },
 
-  loadingOverlay: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(0,0,0,0.65)",
-    justifyContent: "center",
+  primaryButton: {
+    backgroundColor: "#1E272B",
+    borderRadius: 14,
+    paddingVertical: 15,
     alignItems: "center",
+    marginTop: 8,
   },
 
-  loadingText: {
-    color: "#fff",
-    marginTop: 15,
+  primaryButtonText: {
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
   },
 
-  processorContainer: {
-    position: "absolute",
-    left: -10000,
-    top: -10000,
-  },
-
-  header: {
-    height: 90,
-    paddingTop: 45,
-    paddingHorizontal: 20,
-    flexDirection: "row",
+  secondaryButton: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E9E1D8",
+    borderRadius: 14,
+    paddingVertical: 15,
     alignItems: "center",
-    justifyContent: "space-between",
+    marginBottom: 10,
   },
 
-  backButton: {
+  secondaryButtonText: {
+    color: "#1E272B",
     fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-
-  headerSpace: {
-    width: 60,
+    fontWeight: "600",
   },
 });
