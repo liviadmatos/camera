@@ -10,13 +10,7 @@ import {
   View,
 } from "react-native";
 
-type FilterType =
-  | "normal"
-  | "yellow"
-  | "blue"
-  | "blackwhite"
-  | "pink"
-  | "green";
+type FilterType = "normal" | "yellow" | "blue" | "pink" | "green";
 
 type Photo = {
   id: string;
@@ -32,7 +26,6 @@ const FILTER_STYLE: Record<
 > = {
   yellow: { color: "#FFD54F", opacity: 0.28 },
   blue: { color: "#42A5F5", opacity: 0.26 },
-  blackwhite: { color: "#F5F5F5", opacity: 0.34 },
   pink: { color: "#EC407A", opacity: 0.25 },
   green: { color: "#66BB6A", opacity: 0.24 },
 };
@@ -150,12 +143,12 @@ export default function GalleryScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
   },
 
   container: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
     paddingTop: 10,
     paddingBottom: 32,
   },
@@ -165,7 +158,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginHorizontal: 20,
     marginBottom: 18,
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   gallery: {
@@ -174,13 +167,13 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    width: "46%",
-    margin: "2%",
+    flex: 1,
+    margin: 6,
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    borderRadius: 6,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "#EAE1D8",
+    borderColor: "#DCE4DE",
     shadowColor: "#000",
     shadowOpacity: 0.04,
     shadowRadius: 10,
@@ -191,14 +184,14 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: "relative",
     width: "100%",
-    height: 170,
-    backgroundColor: "#F9F7F4",
+    height: 184,
+    backgroundColor: "#E5ECE6",
   },
 
   image: {
     width: "100%",
-    height: 170,
-    backgroundColor: "#F9F7F4",
+    height: 184,
+    backgroundColor: "#E5ECE6",
   },
 
   filterOverlay: {
@@ -214,26 +207,26 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     paddingHorizontal: 10,
     paddingTop: 10,
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   date: {
     fontSize: 12,
-    color: "#707070",
+    color: "#718078",
     paddingHorizontal: 10,
     paddingBottom: 10,
   },
 
   editButton: {
-    backgroundColor: "#F4F1ED",
+    backgroundColor: "#E5ECE6",
     borderTopWidth: 1,
-    borderTopColor: "#ECE4DC",
+    borderTopColor: "#DCE4DE",
     paddingVertical: 10,
     alignItems: "center",
   },
 
   editText: {
-    color: "#1E272B",
+    color: "#183F36",
     fontSize: 13,
     fontWeight: "600",
   },
@@ -249,12 +242,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     marginBottom: 8,
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   emptyText: {
     fontSize: 15,
-    color: "#666",
+    color: "#5F716B",
     textAlign: "center",
   },
 
@@ -265,9 +258,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F9F7F4",
+    backgroundColor: "#F1F4F0",
     borderBottomWidth: 1,
-    borderBottomColor: "#E9E2DB",
+    borderBottomColor: "#DCE4DE",
   },
 
   headerButton: {
@@ -277,13 +270,13 @@ const styles = StyleSheet.create({
   backButton: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerSpace: {

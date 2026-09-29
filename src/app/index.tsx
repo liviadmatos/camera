@@ -5,10 +5,10 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.heroCard}>
-        <Text style={styles.eyebrow}>Camera</Text>
+        <Text style={styles.eyebrow}>DIÁRIO VISUAL</Text>
         <Text style={styles.title}>Frame</Text>
         <Text style={styles.subtitle}>
-          Capture o momento e mantenha o melhor da sua memória em um só lugar.
+          Guarde os momentos que fazem o seu dia valer a pena.
         </Text>
       </View>
 
@@ -19,10 +19,10 @@ export default function Index() {
               Câmera
             </Text>
             <Text style={[styles.cardTitle, styles.primaryCardTitle]}>
-              Tirar foto
+              Abrir câmera
             </Text>
             <Text style={[styles.cardMeta, styles.primaryCardMeta]}>
-              Abrir agora
+              Registrar um momento
             </Text>
           </TouchableOpacity>
         </Link>
@@ -36,7 +36,21 @@ export default function Index() {
               Minha galeria
             </Text>
             <Text style={[styles.cardMeta, styles.secondaryCardMeta]}>
-              Ver fotos
+              Rever suas fotos
+            </Text>
+          </TouchableOpacity>
+        </Link>
+
+        <Link href="/game" asChild>
+          <TouchableOpacity style={styles.gameCard} activeOpacity={0.9}>
+            <Text style={[styles.cardLabel, styles.gameCardLabel]}>
+              ENTRE AMIGOS
+            </Text>
+            <Text style={[styles.cardTitle, styles.gameCardTitle]}>
+              Desafio de legendas
+            </Text>
+            <Text style={[styles.cardMeta, styles.gameCardMeta]}>
+              Quem conhece melhor a história?
             </Text>
           </TouchableOpacity>
         </Link>
@@ -48,63 +62,60 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
-    paddingHorizontal: 20,
-    paddingTop: 54,
-    paddingBottom: 42,
+    backgroundColor: "#F1F4F0",
+    paddingHorizontal: 24,
+    paddingTop: 62,
+    paddingBottom: 36,
   },
 
   heroCard: {
-    backgroundColor: "#F9F7F4",
-    borderWidth: 1,
-    borderColor: "#E7DED4",
-    borderRadius: 28,
-    paddingHorizontal: 24,
-    paddingVertical: 28,
-    marginBottom: 24,
+    paddingTop: 22,
+    paddingBottom: 34,
+    marginBottom: 12,
   },
 
   eyebrow: {
     fontSize: 12,
     fontWeight: "700",
     letterSpacing: 1.2,
-    color: "#7D7168",
+    color: "#D66349",
     textTransform: "uppercase",
-    marginBottom: 8,
+    marginBottom: 12,
   },
 
   title: {
-    fontSize: 42,
+    fontSize: 52,
     fontWeight: "800",
-    color: "#1E272B",
-    letterSpacing: -1.5,
+    color: "#183F36",
+    letterSpacing: 0,
   },
 
   subtitle: {
     marginTop: 12,
     fontSize: 16,
-    color: "#4F5B60",
-    lineHeight: 24,
+    color: "#5F716B",
+    lineHeight: 25,
+    maxWidth: 300,
   },
 
   actions: {
-    gap: 14,
+    gap: 12,
   },
 
   primaryCard: {
-    backgroundColor: "#1E272B",
-    borderRadius: 22,
-    paddingHorizontal: 22,
-    paddingVertical: 22,
+    backgroundColor: "#183F36",
+    borderRadius: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
 
   secondaryCard: {
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E9E1D8",
-    borderRadius: 22,
-    paddingHorizontal: 22,
-    paddingVertical: 22,
+    borderColor: "#DCE4DE",
+    borderRadius: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
 
   cardLabel: {
@@ -116,15 +127,15 @@ const styles = StyleSheet.create({
   },
 
   primaryCardLabel: {
-    color: "rgba(255,255,255,0.7)",
+    color: "#B9D0C5",
   },
 
   secondaryCardLabel: {
-    color: "#7D7168",
+    color: "#D66349",
   },
 
   cardTitle: {
-    fontSize: 24,
+    fontSize: 23,
     fontWeight: "700",
     letterSpacing: -0.5,
   },
@@ -134,7 +145,22 @@ const styles = StyleSheet.create({
   },
 
   secondaryCardTitle: {
-    color: "#1E272B",
+    color: "#183F36",
+  },
+
+  gameCard: {
+    backgroundColor: "#D66349",
+    borderRadius: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
+  gameCardLabel: {
+    color: "#FCE9E2",
+  },
+
+  gameCardTitle: {
+    color: "#FFFFFF",
   },
 
   cardMeta: {
@@ -143,10 +169,14 @@ const styles = StyleSheet.create({
   },
 
   primaryCardMeta: {
-    color: "rgba(255,255,255,0.76)",
+    color: "#D4E2DB",
   },
 
   secondaryCardMeta: {
-    color: "#6A7479",
+    color: "#5F716B",
+  },
+
+  gameCardMeta: {
+    color: "#FCE9E2",
   },
 });

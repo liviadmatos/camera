@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { CameraView, useCameraPermissions, type CameraType } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import {
@@ -16,6 +16,7 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+  const [facing, setFacing] = useState<CameraType>("back");
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const router = useRouter();
@@ -32,6 +33,12 @@ export default function CameraScreen() {
   function retakePhoto() {
     setPhoto(null);
     setCaption("");
+  }
+
+  function toggleCameraFacing() {
+    if (isCapturing) return;
+    setIsCameraReady(false);
+    setFacing((current) => (current === "back" ? "front" : "back"));
   }
 
   async function takePhoto() {
@@ -185,9 +192,21 @@ export default function CameraScreen() {
         <CameraView
           ref={cameraRef}
           style={styles.camera}
-          facing="back"
+          facing={facing}
           onCameraReady={() => setIsCameraReady(true)}
         />
+
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={
+            facing === "back" ? "Usar câmera frontal" : "Usar câmera traseira"
+          }
+          style={styles.flipButton}
+          onPress={toggleCameraFacing}
+          disabled={!isCameraReady || isCapturing}
+        >
+          <Text style={styles.flipButtonText}>↻</Text>
+        </TouchableOpacity>
 
         <View style={styles.captureContainer}>
           <TouchableOpacity
@@ -206,12 +225,12 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
   },
 
   loadingScreen: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
   },
 
   header: {
@@ -221,9 +240,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F9F7F4",
+    backgroundColor: "#F1F4F0",
     borderBottomWidth: 1,
-    borderBottomColor: "#E9E2DB",
+    borderBottomColor: "#DCE4DE",
   },
 
   headerButton: {
@@ -233,13 +252,13 @@ const styles = StyleSheet.create({
   backButton: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerSpace: {
@@ -249,11 +268,33 @@ const styles = StyleSheet.create({
   cameraWrap: {
     flex: 1,
     position: "relative",
-    backgroundColor: "#0F1518",
+    backgroundColor: "#111A18",
   },
 
   camera: {
     flex: 1,
+  },
+
+  flipButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "rgba(17,26,24,0.76)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.48)",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+  },
+
+  flipButtonText: {
+    color: "#FFFFFF",
+    fontSize: 27,
+    lineHeight: 30,
+    fontWeight: "600",
   },
 
   captureContainer: {
@@ -265,42 +306,41 @@ const styles = StyleSheet.create({
   },
 
   captureButton: {
-    width: 86,
-    height: 86,
-    borderRadius: 43,
-    backgroundColor: "rgba(255,255,255,0.9)",
+    width: 82,
+    height: 82,
+    borderRadius: 41,
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.28,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
   },
 
   captureButtonInner: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "#1E272B",
-    borderWidth: 4,
-    borderColor: "#F4F0EA",
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+    backgroundColor: "#D66349",
+    borderWidth: 3,
+    borderColor: "#FCE9E2",
   },
 
   previewScreen: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
     padding: 16,
   },
 
   previewCard: {
     width: "100%",
-    height: 420,
+    flex: 1,
+    minHeight: 220,
     backgroundColor: "#FFFFFF",
-    borderRadius: 28,
+    borderRadius: 6,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#E9E1D8",
   },
 
   photo: {
@@ -311,28 +351,28 @@ const styles = StyleSheet.create({
   },
 
   infoContainer: {
-    backgroundColor: "#F9F7F4",
-    borderRadius: 24,
-    padding: 18,
-    marginTop: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 6,
+    padding: 16,
+    marginTop: 14,
     borderWidth: 1,
-    borderColor: "#E9E1D8",
+    borderColor: "#DCE4DE",
   },
 
   captionTitle: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
     marginBottom: 10,
   },
 
   input: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 14,
+    borderRadius: 6,
     paddingHorizontal: 14,
     paddingVertical: 13,
     fontSize: 16,
-    color: "#1E272B",
+    color: "#183F36",
     borderWidth: 1,
     borderColor: "#E3D9D1",
     marginBottom: 12,
@@ -353,30 +393,30 @@ const styles = StyleSheet.create({
 
   permissionCard: {
     width: "100%",
-    backgroundColor: "#F9F7F4",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E9E1D8",
-    borderRadius: 24,
+    borderColor: "#DCE4DE",
+    borderRadius: 6,
     padding: 24,
   },
 
   permissionTitle: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
     marginBottom: 10,
   },
 
   permissionText: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#5F696D",
+    color: "#5F716B",
     marginBottom: 22,
   },
 
   primaryButton: {
-    backgroundColor: "#1E272B",
-    borderRadius: 14,
+    backgroundColor: "#183F36",
+    borderRadius: 6,
     paddingVertical: 15,
     alignItems: "center",
     marginTop: 8,
@@ -391,8 +431,8 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E9E1D8",
-    borderRadius: 14,
+    borderColor: "#DCE4DE",
+    borderRadius: 6,
     paddingVertical: 15,
     alignItems: "center",
     marginBottom: 10,

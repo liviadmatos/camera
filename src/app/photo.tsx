@@ -10,13 +10,7 @@ import {
   View,
 } from "react-native";
 
-type FilterType =
-  | "normal"
-  | "yellow"
-  | "blue"
-  | "blackwhite"
-  | "pink"
-  | "green";
+type FilterType = "normal" | "yellow" | "blue" | "pink" | "green";
 
 type Photo = {
   id: string;
@@ -32,7 +26,6 @@ const FILTER_STYLE: Record<
 > = {
   yellow: { color: "#FFD54F", opacity: 0.28 },
   blue: { color: "#42A5F5", opacity: 0.26 },
-  blackwhite: { color: "#F5F5F5", opacity: 0.34 },
   pink: { color: "#EC407A", opacity: 0.25 },
   green: { color: "#66BB6A", opacity: 0.24 },
 };
@@ -161,7 +154,7 @@ export default function PhotoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
     paddingBottom: 32,
   },
 
@@ -169,12 +162,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
   },
 
   loadingText: {
     fontSize: 16,
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   header: {
@@ -184,9 +177,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F9F7F4",
+    backgroundColor: "#F1F4F0",
     borderBottomWidth: 1,
-    borderBottomColor: "#E9E2DB",
+    borderBottomColor: "#DCE4DE",
   },
 
   headerButton: {
@@ -196,13 +189,13 @@ const styles = StyleSheet.create({
   backButton: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerSpace: {
@@ -211,20 +204,21 @@ const styles = StyleSheet.create({
 
   photoContainer: {
     position: "relative",
-    width: "100%",
-    height: 430,
+    flex: 1,
+    minHeight: 260,
     backgroundColor: "#FFFFFF",
     marginTop: 16,
+    marginBottom: 8,
     marginHorizontal: 16,
-    borderRadius: 28,
+    borderRadius: 6,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "#EAE1D8",
+    borderColor: "#DCE4DE",
   },
 
   photo: {
     width: "100%",
-    height: 430,
+    height: "100%",
     resizeMode: "contain",
     backgroundColor: "#FFFFFF",
   },
@@ -246,20 +240,20 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
     marginBottom: 8,
   },
 
   date: {
     fontSize: 14,
-    color: "#666",
+    color: "#5F716B",
     marginBottom: 20,
   },
 
   editButton: {
-    backgroundColor: "#1E272B",
+    backgroundColor: "#183F36",
     paddingVertical: 15,
-    borderRadius: 12,
+    borderRadius: 6,
     alignItems: "center",
     marginBottom: 10,
   },
@@ -271,14 +265,14 @@ const styles = StyleSheet.create({
   },
 
   deleteButton: {
-    backgroundColor: "#F4E5E2",
+    backgroundColor: "#FCE9E2",
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: "center",
   },
 
   deleteText: {
-    color: "#8A3B2E",
+    color: "#A33E2C",
     fontSize: 16,
     fontWeight: "700",
   },

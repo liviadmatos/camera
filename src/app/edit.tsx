@@ -2,23 +2,17 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-type FilterType =
-  | "normal"
-  | "yellow"
-  | "blue"
-  | "blackwhite"
-  | "pink"
-  | "green";
+type FilterType = "normal" | "yellow" | "blue" | "pink" | "green";
 
 type Photo = {
   id: string;
@@ -33,7 +27,6 @@ const filters: { id: FilterType; name: string; color: string }[] = [
   { id: "normal", name: "Normal", color: "#FFFFFF" },
   { id: "yellow", name: "Amarelo", color: "#FFD54F" },
   { id: "blue", name: "Azul", color: "#42A5F5" },
-  { id: "blackwhite", name: "P&B", color: "#777777" },
   { id: "pink", name: "Rosa", color: "#EC407A" },
   { id: "green", name: "Verde", color: "#66BB6A" },
 ];
@@ -44,7 +37,6 @@ const FILTER_STYLE: Record<
 > = {
   yellow: { color: "#FFD54F", opacity: 0.28 },
   blue: { color: "#42A5F5", opacity: 0.26 },
-  blackwhite: { color: "#F5F5F5", opacity: 0.34 },
   pink: { color: "#EC407A", opacity: 0.25 },
   green: { color: "#66BB6A", opacity: 0.24 },
 };
@@ -53,7 +45,6 @@ const VALID_FILTERS: FilterType[] = [
   "normal",
   "yellow",
   "blue",
-  "blackwhite",
   "pink",
   "green",
 ];
@@ -257,7 +248,7 @@ export default function EditScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
     paddingBottom: 32,
   },
 
@@ -265,13 +256,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F4F0EA",
+    backgroundColor: "#F1F4F0",
   },
 
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: "#2B2B2B",
+    color: "#183F36",
   },
 
   header: {
@@ -281,9 +272,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F9F7F4",
+    backgroundColor: "#F1F4F0",
     borderBottomWidth: 1,
-    borderBottomColor: "#E9E2DB",
+    borderBottomColor: "#DCE4DE",
   },
 
   headerButton: {
@@ -293,13 +284,13 @@ const styles = StyleSheet.create({
   backButton: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   headerSpace: {
@@ -307,17 +298,18 @@ const styles = StyleSheet.create({
   },
 
   previewContainer: {
-    height: 430,
+    flex: 1,
+    minHeight: 220,
     marginHorizontal: 16,
     marginTop: 16,
-    borderRadius: 28,
+    borderRadius: 6,
     overflow: "hidden",
     backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
     borderWidth: 1,
-    borderColor: "#EAE1D8",
+    borderColor: "#DCE4DE",
     shadowColor: "#000",
     shadowOpacity: 0.04,
     shadowRadius: 12,
@@ -346,7 +338,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
     marginBottom: 12,
     marginHorizontal: 16,
-    color: "#1E272B",
+    color: "#183F36",
   },
 
   filtersList: {
@@ -360,15 +352,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 8,
-    borderRadius: 16,
+    borderRadius: 6,
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#EEE6DF",
+    borderColor: "#DCE4DE",
   },
 
   filterButtonSelected: {
-    borderColor: "#1E272B",
-    backgroundColor: "#F5F5F3",
+    borderColor: "#183F36",
+    backgroundColor: "#E5ECE6",
   },
 
   filterCircle: {
@@ -376,7 +368,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "rgba(26, 36, 40, 0.18)",
+    borderColor: "#C8D4CC",
     marginBottom: 6,
   },
 
@@ -389,9 +381,9 @@ const styles = StyleSheet.create({
   saveButton: {
     marginHorizontal: 16,
     marginTop: 22,
-    backgroundColor: "#1E272B",
+    backgroundColor: "#183F36",
     paddingVertical: 15,
-    borderRadius: 14,
+    borderRadius: 6,
     alignItems: "center",
   },
 
