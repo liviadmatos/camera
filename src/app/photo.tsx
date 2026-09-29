@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { DeviceSaveButton } from "../components/device-save-button";
 
 type FilterType = "normal" | "yellow" | "blue" | "pink" | "green";
 
@@ -129,6 +130,7 @@ export default function PhotoScreen() {
             ]}
           />
         )}
+        <DeviceSaveButton uri={photo.uri} />
       </View>
 
       <View style={styles.infoContainer}>

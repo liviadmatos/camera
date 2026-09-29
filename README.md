@@ -1,56 +1,175 @@
-# Welcome to your Expo app 👋
+# Frame
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Frame é um aplicativo mobile de diário visual criado com Expo e React Native para capturar momentos, organizar fotos e transformar a rotina em pequenas histórias com identidade pessoal.
 
-## Get started
+A proposta do app é simples e direta: abrir a câmera, registrar um instante, adicionar uma legenda, explorar a galeria e revisitar memórias com filtros, edição e um mini desafio de adivinhação.
 
-1. Install dependencies
+## Visão geral
 
-   ```bash
-   npm install
-   ```
+O projeto combina:
 
-2. Start the app
+- câmera nativa com captura de fotos;
+- galeria interna para visualizar registros;
+- edição de fotos com filtros visuais;
+- legenda personalizada por memória;
+- desafio de jogo para identificar a legenda correta;
+- navegação fluida entre telas com Expo Router;
+- armazenamento local do app para manter as memórias acessíveis.
 
-   ```bash
-   npx expo start
-   ```
+## Funcionalidades
 
-In the output, you'll find options to open the app in a
+### 1. Captura de momentos
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- acesso rápido à câmera diretamente pela home;
+- troca entre câmera traseira e frontal;
+- pré-visualização da foto após a captura;
+- adição de legenda antes de salvar no fluxo do app.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 2. Galeria pessoal
 
-## Get a fresh project
+- lista de fotos salvas no app;
+- visualização detalhada de cada registro;
+- apresentação da legenda e data da memória;
+- possibilidade de excluir fotos antigas ou irrelevantes.
 
-When you're ready, run:
+### 3. Edição visual
 
-```bash
-npm run reset-project
+- filtros em tons de amarelo, azul, rosa e verde;
+- visualização em tempo real do resultado;
+- edição de fotos já registradas na galeria.
+
+### 4. Desafio entre amigos
+
+- jogo que seleciona fotos e oferece opções de legendas;
+- pontuação por acertos;
+- experiência social e divertida para compartilhar memórias com outras pessoas.
+
+### 5. Interface pensada para mobile
+
+- visual limpo e acolhedor;
+- paleta com tons terrosos e contrastes suaves;
+- cards de ação com hierarquia visual clara;
+- navegação amigável em telas curtas e focadas.
+
+## Stack tecnológica
+
+- Expo SDK 57
+- React Native 0.86
+- React 19
+- TypeScript
+- Expo Router
+- Expo Camera
+- AsyncStorage
+- React Native Reanimated
+- React Native Gesture Handler
+- React Native Safe Area Context
+
+## Estrutura do projeto
+
+```text
+.
+├── app.json                  # configuração do app Expo
+├── package.json              # dependências e scripts
+├── tsconfig.json            # configuração TypeScript
+├── src/
+│   ├── app/
+│   │   ├── camera.tsx       # fluxo de câmera
+│   │   ├── edit.tsx         # edição e filtros
+│   │   ├── gallery.tsx      # galeria de fotos
+│   │   ├── game.tsx         # jogo de legendas
+│   │   ├── index.tsx        # home do app
+│   │   ├── photo.tsx        # detalhe da foto
+│   │   └── _layout.tsx      # layout global
+│   └── components/
+├── assets/
+├── example/
+└── README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Requisitos
 
-### Other setup steps
+Antes de iniciar, verifique se o ambiente atende ao mínimo do Expo SDK 57:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- Node.js 22.13.x ou superior
+- npm ou yarn
+- Expo CLI
+- Android Studio / emulator ou iOS Simulator
+- em alguns casos, um celular físico ou emulador para testes em desenvolvimento
 
-## Learn more
+## Como rodar o projeto
 
-To learn more about developing your project with Expo, look at the following resources:
+1. Instale as dependências:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm install
+```
 
-## Join the community
+2. Inicie o projeto:
 
-Join our community of developers creating universal apps.
+```bash
+npx expo start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+3. Escolha uma opção de execução:
+
+- Android emulator
+- iOS simulator
+- Expo Go
+- desenvolvimento web, quando disponível
+
+### Scripts disponíveis
+
+```bash
+npm start
+npx expo start
+npx expo start --android
+npx expo start --ios
+npx expo start --web
+```
+
+## Fluxo de uso
+
+1. Abra a tela inicial do app;
+2. acesse a câmera;
+3. tire uma foto ou capture um momento;
+4. adicione uma legenda inspirada no contexto;
+5. veja a foto na galeria;
+6. edite filtros ou detalhes da imagem;
+7. acesse o desafio para testar a memória e os amigos.
+
+## Status do projeto
+
+Este projeto está em desenvolvimento ativo e concentra a experiência principal em:
+
+- registrar momentos do cotidiano;
+- dar personalidade às fotos;
+- criar uma memória visual em formato de diário;
+- oferecer interação além da simples visualização.
+
+## Melhorias futuras
+
+Algumas evoluções que deixam o produto mais completo incluem:
+
+- organização por albums ou grupos;
+- busca por legenda ou data;
+- exportação de fotos para compartilhamento;
+- suporte a múltiplos usuários/perfis;
+- refinamento da experiência de gamificação;
+- melhorias em acessibilidade e microinterações.
+
+## Contribuição
+
+Contribuições são bem-vindas. Para colaborar:
+
+1. faça um fork do projeto;
+2. crie uma branch para sua funcionalidade;
+3. implemente a melhoria;
+4. abra um pull request com descrição clara do que foi alterado.
+
+## Licença
+
+Este projeto está sob a licença MIT. Consulte o arquivo de licença do repositório para mais detalhes.
+
+## Observação
+
+O objetivo do Frame é transformar fotos em memórias com contexto, emoção e um toque mais pessoal. O app foi pensado como um diário visual leve, divertido e fácil de usar no dia a dia.

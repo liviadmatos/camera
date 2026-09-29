@@ -3,6 +3,7 @@ import { CameraView, useCameraPermissions, type CameraType } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { DeviceSaveButton } from "../components/device-save-button";
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -19,6 +21,8 @@ export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>("back");
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedToGallery, setSavedToGallery] = useState(false);
   const router = useRouter();
   const cameraRef = useRef<CameraView>(null);
 
@@ -33,6 +37,7 @@ export default function CameraScreen() {
   function retakePhoto() {
     setPhoto(null);
     setCaption("");
+    setSavedToGallery(false);
   }
 
   function toggleCameraFacing() {
@@ -63,7 +68,8 @@ export default function CameraScreen() {
   }
 
   async function savePhoto() {
-    if (!photo) return;
+    if (!photo || isSaving || savedToGallery) return;
+    setIsSaving(true);
 
     try {
       const existingPhotos = await AsyncStorage.getItem("photos");
@@ -74,7 +80,8 @@ export default function CameraScreen() {
       );
 
       if (alreadySaved) {
-        Alert.alert("Foto já salva", "Essa foto já está na sua galeria.");
+        setSavedToGallery(true);
+        Alert.alert("Foto já salva", "Essa foto já está na galeria do app.");
         return;
       }
 
@@ -86,11 +93,13 @@ export default function CameraScreen() {
       });
 
       await AsyncStorage.setItem("photos", JSON.stringify(photos));
-
-      Alert.alert("Foto salva!", "A foto foi adicionada à sua galeria.");
+      setSavedToGallery(true);
+      Alert.alert("Foto salva!", "A foto foi adicionada à galeria do app.");
     } catch (error) {
       console.log("Erro ao salvar foto:", error);
-      Alert.alert("Erro", "Não foi possível salvar a foto.");
+      Alert.alert("Erro", "Não foi possível salvar a foto na galeria do app.");
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -144,6 +153,7 @@ export default function CameraScreen() {
         <View style={styles.previewScreen}>
           <View style={styles.previewCard}>
             <Image source={{ uri: photo }} style={styles.photo} />
+            <DeviceSaveButton uri={photo} />
           </View>
 
           <View style={styles.infoContainer}>
@@ -168,8 +178,21 @@ export default function CameraScreen() {
               <Text style={styles.secondaryButtonText}>Tirar novamente</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.primaryButton} onPress={savePhoto}>
-              <Text style={styles.primaryButtonText}>Salvar</Text>
+            <TouchableOpacity
+              style={[
+                styles.primaryButton,
+                (isSaving || savedToGallery) && styles.disabledButton,
+              ]}
+              onPress={savePhoto}
+              disabled={isSaving || savedToGallery}
+            >
+              {isSaving ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.primaryButtonText}>
+                  {savedToGallery ? "Salva na galeria" : "Salvar na galeria"}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -338,6 +361,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     minHeight: 220,
+    position: "relative",
     backgroundColor: "#FFFFFF",
     borderRadius: 6,
     overflow: "hidden",
@@ -426,6 +450,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
+  },
+
+  disabledButton: {
+    opacity: 0.62,
   },
 
   secondaryButton: {

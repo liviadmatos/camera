@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { DeviceSaveButton } from "../components/device-save-button";
 
 type Photo = { uri: string; caption: string };
 type Question = { photo: Photo; choices: string[] };
@@ -205,6 +206,7 @@ export default function GameScreen() {
               style={styles.photo}
               resizeMode="contain"
             />
+            <DeviceSaveButton uri={question.photo.uri} />
           </View>
 
           <Text style={styles.sectionLabel}>ESCOLHA UMA LEGENDA</Text>
@@ -466,6 +468,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   photoFrame: {
+    position: "relative",
     width: "100%",
     aspectRatio: 1.25,
     maxHeight: 360,
